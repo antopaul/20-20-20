@@ -26,7 +26,9 @@ public class Twenty20Twenty {
 	static TrayIcon trayIcon = null;
 	
 	static TimerTask reminder = null;
-    static Timer timer = null; 
+    static Timer timer = null;
+    
+    static long interval = 20 * 1000 * 60;
 	
     public static void main(String[] args) {
         /* Use an appropriate Look and Feel */
@@ -76,19 +78,14 @@ public class Twenty20Twenty {
         
         trayIcon.setPopupMenu(popup);
         
+        trayIcon.setToolTip("20-20-20 rule for the eye");
+        
         try {
             tray.add(trayIcon);
         } catch (AWTException e) {
             System.out.println("TrayIcon could not be added.");
             return;
         }
-        
-        trayIcon.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null,
-                        "This is the 20-20-20 rule for the eye");
-            }
-        });
         
         aboutItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -127,21 +124,16 @@ public class Twenty20Twenty {
 
     protected static void setTimer() {
     	
-    	
     	reminder = new TimerTask() {
 
 			@Override
 			public void run() {
-				System.out.println("Time");
 				trayIcon.displayMessage("20-20-20",
-                        "It's 20-20-20 time", TrayIcon.MessageType.ERROR);
-				//trayIcon.
-				
+                        "It's 20-20-20 time", TrayIcon.MessageType.INFO);
 			}
-    		
     	};
     	
     	timer = new Timer();
-    	timer.schedule(reminder, 20 * 1000 * 60, 20 * 1000 * 60);
+    	timer.schedule(reminder, interval, interval);
     }
 }
