@@ -21,14 +21,23 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class Twenty20Twenty {
 
-	static MenuItem reminderItem = new MenuItem("20-20-20");
-
 	static TrayIcon trayIcon = null;
 
 	static TimerTask reminder = null;
 	static Timer timer = null;
 
 	static long interval = 20 * 1000 * 60;
+	
+	static final String aboutMessage = "20-20-20 Rule "
+			+ "For The Eye\r\n"
+			+ "______________________________________________________________\r\n"
+			+ "Follow this rule to reduce eye strain when working in front of a computer.\r\n"
+			+ "Every 20 minutes look at something 20 feet away for "
+			+ "20 seconds.\r\n"
+			+ "______________________________________________________________"
+			+
+
+			"\r\nAnto Paul";
 
 	public static void main(String[] args) {
 		/* Use an appropriate Look and Feel */
@@ -63,12 +72,12 @@ public class Twenty20Twenty {
 			return;
 		}
 		final PopupMenu popup = new PopupMenu();
-		final Image image = createImage("/images/eye.gif", "tray icon");
+		final Image image = createImage("/images/eye.gif", "20-20-20 tray icon");
 		trayIcon = new TrayIcon(image);
 		final SystemTray tray = SystemTray.getSystemTray();
 
 		// Create a popup menu components
-		MenuItem aboutItem = new MenuItem("About");
+		MenuItem aboutItem = new MenuItem("About...");
 
 		MenuItem exitItem = new MenuItem("Exit");
 
@@ -80,36 +89,16 @@ public class Twenty20Twenty {
 		trayIcon.setPopupMenu(popup);
 
 		trayIcon.setToolTip("20-20-20 Rule For The Eye");
-
-		try {
-			tray.add(trayIcon);
-		} catch (AWTException e) {
-			System.out.println("TrayIcon could not be added.");
-			return;
-		}
-
-		aboutItem.addActionListener(new ActionListener() {
-			
-			
+		
+		ActionListener aboutListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Icon icon = new ImageIcon(image);
-				
-				JOptionPane
-						.showMessageDialog(
-								null,
-								"20-20-20 Rule "
-										+ "For The Eye\r\n"
-										+ "______________________________________________________________\r\n"
-										+ "Follow this rule to reduce eye strain when working in front of a computer.\r\n"
-										+ "Every 20 minutes look at something 20 feet away for "
-										+ "20 seconds.\r\n"
-										+ "______________________________________________________________"
-										+
-
-										"\r\nAnto Paul", "About 20-20-20",
-								JOptionPane.PLAIN_MESSAGE, icon);
+				JOptionPane.showMessageDialog(null, aboutMessage, 
+						"About 20-20-20", JOptionPane.PLAIN_MESSAGE, icon);
 			}
-		});
+        };
+
+		aboutItem.addActionListener(aboutListener);
 
 		exitItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -117,6 +106,15 @@ public class Twenty20Twenty {
 				System.exit(0);
 			}
 		});
+		
+		trayIcon.addActionListener(aboutListener);
+
+		try {
+			tray.add(trayIcon);
+		} catch (AWTException e) {
+			System.out.println("TrayIcon could not be added.");
+			return;
+		}
 	}
 
 	// Obtain the image URL
