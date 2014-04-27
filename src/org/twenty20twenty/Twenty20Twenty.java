@@ -8,7 +8,13 @@ import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.URL;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -28,6 +34,8 @@ public class Twenty20Twenty {
 
 	static long interval = 20 * 1000 * 60;
 	
+	protected static RandomAccessFile lockFile = null;
+	
 	static final String aboutMessage = "20-20-20 Rule "
 			+ "For The Eye\r\n"
 			+ "______________________________________________________________\r\n"
@@ -40,6 +48,13 @@ public class Twenty20Twenty {
 			"\r\nAnto Paul";
 
 	public static void main(String[] args) {
+		
+		if(isAlreadyRunning()) {
+			System.out.println("Already running. Exiting...");
+			System.exit(0);
+		}
+		createLock();
+		
 		/* Use an appropriate Look and Feel */
 		try {
 			//UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -102,8 +117,10 @@ public class Twenty20Twenty {
 
 		exitItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				releaseLock();
 				tray.remove(trayIcon);
-				System.exit(0);
+				timer.cancel();
+				//System.exit(0);
 			}
 		});
 		
@@ -142,5 +159,71 @@ public class Twenty20Twenty {
 
 		timer = new Timer();
 		timer.schedule(reminder, interval, interval);
+	}
+	
+	protected static FileLock createLock() {
+		String temp = System.getProperty("java.io.tmpdir");
+		File file = new File(temp, "Twenty2020.tmp");
+		file.deleteOnExit();
+		
+		FileChannel fileChannel = null;
+		FileLock lock = null;
+		
+		try {
+			lockFile = new RandomAccessFile(file,"rw");
+			fileChannel = lockFile.getChannel();
+			lock = fileChannel.tryLock();
+		
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return lock;
+	}
+	
+	protected static void releaseLock() {
+		if(lockFile != null) {
+			try {
+				lockFile.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	protected static boolean isAlreadyRunning() throws RuntimeException {
+
+		String temp = System.getProperty("java.io.tmpdir");
+		File file = new File(temp, "Twenty2020.tmp");
+		file.deleteOnExit();
+		FileChannel fileChannel = null;
+		
+		try {
+			lockFile = new RandomAccessFile(file,"rw");
+			fileChannel = lockFile.getChannel();
+			FileLock lock = fileChannel.tryLock();
+			
+			if(lock == null) {
+				return true;
+			}
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if(fileChannel != null) {
+				try {
+					fileChannel.close();
+					lockFile.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return false;
+		
 	}
 }
