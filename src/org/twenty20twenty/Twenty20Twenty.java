@@ -1,6 +1,23 @@
+/*
+ * Copyright 2014 Anto Paul
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.twenty20twenty;
 
 import java.awt.AWTException;
+import java.awt.CheckboxMenuItem;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -8,6 +25,8 @@ import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,25 +46,25 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class Twenty20Twenty {
 
-	static TrayIcon trayIcon = null;
+	protected static TrayIcon trayIcon = null;
 
-	static TimerTask reminder = null;
-	static Timer timer = null;
+	protected static TimerTask reminder = null;
+	protected static Timer timer = null;
 
-	static long interval = 20 * 1000 * 60;
+	public static long interval = 20 * 1000 * 60;
 	
 	protected static RandomAccessFile lockFile = null;
 	
-	static final String aboutMessage = "20-20-20 Rule "
-			+ "For The Eye\r\n"
-			+ "______________________________________________________________\r\n"
+	protected static boolean isSilentMode = false;
+	
+	static final String aboutMessage = "The 20-20-20 Rule "
+			+ "for the Eye Reminder application\r\n"
+			+ "_________________________________________________________\r\n"
 			+ "Follow this rule to reduce eye strain when working in front of a computer.\r\n"
 			+ "Every 20 minutes look at something 20 feet away for "
 			+ "20 seconds.\r\n"
-			+ "______________________________________________________________"
-			+
-
-			"\r\nAnto Paul";
+			+ "_________________________________________________________"
+			+ "\r\nAnto Paul";
 
 	public static void main(String[] args) {
 		
@@ -92,11 +111,15 @@ public class Twenty20Twenty {
 		final SystemTray tray = SystemTray.getSystemTray();
 
 		// Create a popup menu components
+		CheckboxMenuItem silentModeItem = new CheckboxMenuItem("Silent Mode");
+		
 		MenuItem aboutItem = new MenuItem("About...");
-
+		
 		MenuItem exitItem = new MenuItem("Exit");
-
+		
 		// Add components to popup menu
+		popup.add(silentModeItem);
+		popup.addSeparator();
 		popup.add(aboutItem);
 		popup.addSeparator();
 		popup.add(exitItem);
@@ -104,6 +127,19 @@ public class Twenty20Twenty {
 		trayIcon.setPopupMenu(popup);
 
 		trayIcon.setToolTip("20-20-20 Rule For The Eye");
+		
+		silentModeItem.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.DESELECTED) {
+					isSilentMode = false;
+					setTimer();
+				}
+				if(e.getStateChange() == ItemEvent.SELECTED) {
+					isSilentMode = true;
+					cancelTimer();
+				}
+			}
+		});
 		
 		ActionListener aboutListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -147,10 +183,7 @@ public class Twenty20Twenty {
 	}
 
 	protected static void setTimer() {
-
 		reminder = new TimerTask() {
-
-			@Override
 			public void run() {
 				trayIcon.displayMessage("20-20-20", "It's 20-20-20 time",
 						TrayIcon.MessageType.INFO);
@@ -159,6 +192,10 @@ public class Twenty20Twenty {
 
 		timer = new Timer();
 		timer.schedule(reminder, interval, interval);
+	}
+	
+	protected static void cancelTimer() {
+		timer.cancel();
 	}
 	
 	protected static FileLock createLock() {
