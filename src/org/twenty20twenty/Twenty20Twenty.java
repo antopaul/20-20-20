@@ -64,7 +64,7 @@ public class Twenty20Twenty {
 			+ "Every 20 minutes look at something 20 feet away for "
 			+ "20 seconds.\r\n"
 			+ "_________________________________________________________"
-			+ "\r\nAnto Paul";
+			+ "\r\nhttps://github.com/antopaul/20-20-20";
 
 	public static void main(String[] args) {
 		
