@@ -8,7 +8,7 @@ files:
 
 hooks:
   BeforeInstall:
-    - location: /bin/bash
+    - location: bash
       timeout: 300
       runas: root
       command: |
@@ -17,7 +17,7 @@ hooks:
         unzip /home/ec2-user/build.jar -d /home/ec2-user/build
 
   AfterInstall:
-    - location: /bin/bash
+    - location: bash
       timeout: 300
       runas: root
       command: |
