@@ -3,7 +3,7 @@ version: 0.0
 os: linux
 
 files:
-  - source: /build.jar
+  - source: /20-20-20.jar
     destination: /home/ec2-user/20build
 
 #hooks:
