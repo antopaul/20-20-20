@@ -3,8 +3,8 @@ version: 0.0
 os: linux
 
 files:
-  - source: /home/ec2-user/build.jar
-    destination: /home/ec2-user
+  - source: /build.jar
+    destination: /home/ec2-user/20build
 
 #hooks:
 #  BeforeInstall:
