@@ -6,21 +6,14 @@ files:
   - source: /home/ec2-user/build.jar
     destination: /home/ec2-user
 
-hooks:
-  BeforeInstall:
-    - location: bash
-      timeout: 300
-      runas: root
-      command: |
-        echo "Unzipping the application package"
-        mkdir -p /home/ec2-user/build
-        unzip /home/ec2-user/build.jar -d /home/ec2-user/build
+#hooks:
+#  BeforeInstall:
+#    - location: bash
+#      timeout: 300
+#      runas: ec2-user
 
-  AfterInstall:
-    - location: bash
-      timeout: 300
-      runas: root
-      command: |
-        echo "Starting the Java application"
-        #cd /opt/myapp
-        #nohup java -jar myapp.jar > /var/log/myapp.log 2>&1 &
+#  AfterInstall:
+#    - location: bash
+#      timeout: 300
+#      runas: ec2-user
+      
