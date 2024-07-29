@@ -1,0 +1,11 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo "Hello!!!"
+      - javac src/org/twenty20twenty/Twenty20Twenty.java
+      - zip -r build.jar *
+artifacts:
+  files:
+    - build.jar
