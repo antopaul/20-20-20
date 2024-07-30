@@ -4,6 +4,7 @@ phases:
   build:
     commands:
       - echo "Hello!!!"
+      - java -version
       - javac src/org/twenty20twenty/Twenty20Twenty.java
       - zip -r build.jar *
 artifacts:
