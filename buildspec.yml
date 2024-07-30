@@ -1,10 +1,15 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+	    java: corretto17
+      nodejs: 16.18.0
   build:
     commands:
       - echo "Hello!!!"
       - java -version
+      - node -v
       - javac src/org/twenty20twenty/Twenty20Twenty.java
       - zip -r build.jar *
 artifacts:
